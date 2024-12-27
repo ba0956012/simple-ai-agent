@@ -4,7 +4,6 @@ import os
 
 import numpy as np
 import sounddevice as sd
-from dotenv import load_dotenv
 from playsound import playsound
 
 from simple_ai_agent.KeywordMatcher.KeywordMatcher import KeywordMatcher
@@ -35,7 +34,8 @@ class AudioAI:
         play_speaker_soundt_keywords="播放嗽叭,播放音樂,喇叭聲音".split(","),
         detect_people_countt_keywords="現場人數,人數檢測,檢查人數".split(","),
         keyword_matcher_mode="sBERT",
-        camera_index=0
+        camera_index=0,
+        mic_index=0
     ):
         """
         初始化 AudioAI。
@@ -46,10 +46,10 @@ class AudioAI:
             level=os.getenv("LOG_LEVEL", "INFO").upper(),
             format="%(asctime)s - %(levelname)s - %(message)s",
             handlers=[
-                logging.StreamHandler(),  # 將日誌輸出到控制台
+                logging.StreamHandler(), 
                 logging.FileHandler(
                     "audio_ai.log", mode="a", encoding="utf-8"
-                ),  # 保存到文件
+                ),  
             ],
         )
 
@@ -66,6 +66,7 @@ class AudioAI:
         self.text_mode = False
         self.silent_chunks = 0  # 靜音計數
         self.camera_index = camera_index # 相機index
+        self.mic_index = mic_index # mic index
 
         # 外部函數
         self.play_sound = playsound  # 播放聲音函數
@@ -98,7 +99,7 @@ class AudioAI:
 
     def start(self):
         """
-        啟動音頻處理系統，持續監聽麥克風輸入。
+        持續監聽麥克風輸入
         """
         self.logger.info("系統啟動，開始監聽...")
         try:
@@ -107,6 +108,7 @@ class AudioAI:
                 channels=1,
                 callback=self._audio_callback,
                 blocksize=self.chunk,
+                device=self.mic_index
             ):
                 while True:
                     pass
@@ -115,7 +117,7 @@ class AudioAI:
 
     def _audio_callback(self, indata, frames, callback_time, status):
         """
-        音頻數據回調函數，實時處理音頻塊。
+        音頻數據回調函數
 
         Parameters:
         - indata: 音頻數據
@@ -168,13 +170,15 @@ class AudioAI:
                 scores = self.keyword_matcher.compute_similarity(text, embeddings)
                 max_score = max(scores) if isinstance(scores, list) else scores.max()
                 if max_score > self.similarity_threshold:
-                    self.logger.info(f"相似關鍵字匹配，執行對應動作...")
+                    self.logger.info(f"相似關鍵字，執行對應動作...")
                     handler()
                     break
+                    
             self.keyword_matcher.input_embedding = None
         elif text and self.text_mode:
             self.text_mode = False
         self.audio_data.clear()
+        self.logger.info(f"請繼續說")
 
     def process_audio_to_text(self):
         """
@@ -206,62 +210,3 @@ class AudioAI:
         """
         count = self.person_detector.detect_persons(camera_index=self.camera_index)
         self.logger.info(f"檢測到現場人數：{count}")
-
-
-if __name__ == "__main__":
-    # 加載 .env 文件
-    load_dotenv()
-
-    # 提取參數
-    sample_rate = int(os.getenv("SAMPLE_RATE", 44100))
-    chunk = int(os.getenv("CHUNK", 32000))
-    silence_threshold = int(os.getenv("SILENCE_THRESHOLD", 10))
-    silence_duration = int(os.getenv("SILENCE_DURATION", 2))
-    similarity_threshold = float(os.getenv("SIMILARITY_THRESHOLD", 0.8))
-
-    camera_index = int(os.getenv("CAMERA_INDEX", 0))
-    person_detector = os.getenv("PERSON_DETECTOR", "YOLOv5")
-    person_detector_model = os.getenv(
-        "PERSON_DETECTOR_MODEL", "./simple_ai_agent/PersonDetector/model/yolov5n.onnx"
-    )
-    person_conf_thres = float(os.getenv("PERSON_CONF_THRES", 0.5))
-    person_iou_thres = float(os.getenv("PERSON_IOU_THRES", 0.5))
-    person_input_size = tuple(
-        map(int, os.getenv("PERSON_INPUT_SIZE", "320,320").split(","))
-    )
-
-    transcribe_audio_model = os.getenv("TRANSCRIBE_AUDIO_MODEL", "google")
-
-    audio_to_text_keywords = os.getenv(
-        "AUDIO_TO_TEXT_KEYWORDS", "語音轉文字,語音翻譯,轉換文字,STT"
-    ).split(",")
-    play_speaker_sound_keywords = os.getenv(
-        "PLAY_SPEAKER_SOUND_KEYWORDS", "播放嗽叭,播放音樂,喇叭聲音"
-    ).split(",")
-    detect_people_count_keywords = os.getenv(
-        "DETECT_PEOPLE_COUNT_KEYWORDS", "現場人數,人數檢測,檢查人數"
-    ).split(",")
-
-    keyword_matcher_mode = os.getenv("KEYWORD_MATCHER_MODE", "sBERT")
-
-    # 初始化 AudioAI
-    audio_ai = AudioAI(
-        sample_rate=sample_rate,
-        chunk=chunk,
-        silence_threshold=silence_threshold,
-        silence_duration=silence_duration,
-        similarity_threshold=similarity_threshold,
-        person_detector=person_detector,
-        person_detector_model=person_detector_model,
-        person_conf_thres=person_conf_thres,
-        person_iou_thres=person_iou_thres,
-        person_input_size=person_input_size,
-        transcribe_audio_model=transcribe_audio_model,
-        audio_to_text_keywords=audio_to_text_keywords,
-        play_speaker_soundt_keywords=play_speaker_sound_keywords,
-        detect_people_countt_keywords=detect_people_count_keywords,
-        keyword_matcher_mode=keyword_matcher_mode,
-    )
-
-    # 啟動系統
-    audio_ai.start()
