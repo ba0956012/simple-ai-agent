@@ -77,6 +77,7 @@ class AudioAI:
             conf_thres=person_conf_thres,
             iou_thres=person_iou_thres,
             input_size=person_input_size,
+            camera_index=camera_index
         )
 
         self.transcribe_audio_model = TranscriptionModel.create_model(
@@ -208,5 +209,5 @@ class AudioAI:
         """
         獨立進程中執行人數檢測邏輯。
         """
-        count = self.person_detector.detect_persons(camera_index=self.camera_index)
+        count = self.person_detector.detect_persons()
         self.logger.info(f"檢測到現場人數：{count}")

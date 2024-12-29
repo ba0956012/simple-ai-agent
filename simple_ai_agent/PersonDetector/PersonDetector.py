@@ -32,10 +32,11 @@ class PersonDetector:
         self.iou_thres = iou_thres
         self.input_size = input_size
         self.model_class = model_class
+        self.camera_index = camera_index
         if model_class == "YOLOv5":
             self.model = YOLOv5(model_path, conf_thres=conf_thres, iou_thres=iou_thres)
 
-    def detect_persons(self, camera_index=0, timeout=10):
+    def detect_persons(self, timeout=10):
         """
         開啟相機，並且偵測人數。若超過 timeout 秒未檢測到人，則退出。
 
@@ -46,7 +47,7 @@ class PersonDetector:
         Returns:
         - detected_person_count: 檢測到的人數
         """
-        cap = cv2.VideoCapture(camera_index)
+        cap = cv2.VideoCapture(self.camera_index)
         if not cap.isOpened():
             print("Error: Unable to access the camera.")
             return 0

@@ -5,18 +5,18 @@
 
 simple-ai-agent 功能：
 
-- 實時音頻監聽與處理
+- 聲音監聽與處理
 - 語音轉文字（使用speech_recognition的google）
 - 關鍵字檢測與操作 (sBERT 或是 Levenshtein)
-- 現場人數檢測 (yoloV5n)
+- 現場人數檢測 ([yoloV5n](https://github.com/yakhyo/yolov5-onnx-inference/blob/main/models/yolov5.py))
 
 ---
 
 ## 環境需求
 
 - **系統**: macOS (Apple Silicon, M1)
-- **Python**: 3.8 或更高版本
-- **環境管理工具**: [conda](https://docs.conda.io/)
+- **Python**: 3.8
+- **環境管理工具**: miniforge3
 
 ---
 
@@ -24,13 +24,13 @@ simple-ai-agent 功能：
 
 ### 1. 安裝 Conda
 
-如果尚未安裝 Conda，請先安裝 Miniconda.
+如果尚未安裝 Conda，請先安裝 miniforge3.
 
 ### 2. 創建 Conda 環境
 
 
 ```bash
-conda create -n audio_ai_env python=3.8 -y
+conda create -n audio_ai_env python=3.8
 conda activate audio_ai_env
 ```
 
