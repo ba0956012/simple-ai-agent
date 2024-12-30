@@ -3,7 +3,7 @@ import Levenshtein
 
 
 class KeywordMatcher:
-    def __init__(self, model_name="sBERT"):
+    def __init__(self, model_name="MiniLM"):
         """初始化嵌入模型"""
         self.model_name = model_name
         self.model = self._initialize_model(model_name)
@@ -11,7 +11,7 @@ class KeywordMatcher:
 
     def _initialize_model(self, model_name):
         """根據模型名稱初始化嵌入模型"""
-        if model_name == "sBERT":
+        if model_name == "MiniLM":
             print("使用 Sentence Transformers 作為嵌入模型")
             return SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
         elif model_name == "Levenshtein":
@@ -22,14 +22,14 @@ class KeywordMatcher:
 
     def encode_keywords(self, keywords):
         """向量化關鍵字列表"""
-        if self.model_name == "sBERT":
+        if self.model_name == "MiniLM":
             return self.model.encode(keywords)
         elif self.model_name == "Levenshtein":
             return keywords
 
     def compute_similarity(self, input_text, keyword_embeddings):
         """計算輸入文本與關鍵字的相似度"""
-        if self.model_name == "sBERT":
+        if self.model_name == "MiniLM":
             if self.input_embedding is None:
                 self.input_embedding = self.model.encode(input_text)
             return util.cos_sim(self.input_embedding, keyword_embeddings)
@@ -38,7 +38,7 @@ class KeywordMatcher:
 
 
 if __name__ == "__main__":
-    matcher = KeywordMatcher(model_name="sBERT")
+    matcher = KeywordMatcher(model_name="MiniLM")
 
     keywords = ["語音轉文字", "錄音", "現場人數", "請開始錄音"]
     keyword_embeddings = matcher.encode_keywords(keywords)

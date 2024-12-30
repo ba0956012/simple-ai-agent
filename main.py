@@ -36,7 +36,7 @@ if __name__ == "__main__":
         "DETECT_PEOPLE_COUNT_KEYWORDS", "現場人數,人數檢測,檢查人數"
     ).split(",")
 
-    keyword_matcher_mode = os.getenv("KEYWORD_MATCHER_MODE", "sBERT")
+    keyword_matcher_mode = os.getenv("KEYWORD_MATCHER_MODE", "MiniLM")
 
     # 初始化 AudioAI
     audio_ai = AudioAI(

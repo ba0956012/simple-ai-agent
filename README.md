@@ -7,7 +7,7 @@ simple-ai-agent 功能：
 
 - 聲音監聽與處理
 - 語音轉文字（使用speech_recognition的google）
-- 關鍵字檢測與操作 (sBERT 或是 Levenshtein)
+- 關鍵字檢測與操作 (MiniLM 或是 Levenshtein)
 - 現場人數檢測 ([yoloV5n](https://github.com/yakhyo/yolov5-onnx-inference/blob/main/models/yolov5.py))
 
 ---

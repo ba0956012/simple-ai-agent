@@ -33,7 +33,7 @@ class AudioAI:
         audio_to_text_keywords="語音轉文字,語音翻譯,轉換文字, STT".split(","),
         play_speaker_soundt_keywords="播放嗽叭,播放音樂,喇叭聲音".split(","),
         detect_people_countt_keywords="現場人數,人數檢測,檢查人數".split(","),
-        keyword_matcher_mode="sBERT",
+        keyword_matcher_mode="MiniLM",
         camera_index=0,
         mic_index=0
     ):
